@@ -40,44 +40,27 @@ namespace MQL4CSharp.Base
 
         private Dictionary<String, String> logHashMap;
 
-        public BaseStrategy(Int64 ix) : base(ix)
+        public BaseStrategy(long ix,
+           TIMEFRAME timeframe = TIMEFRAME.PERIOD_CURRENT,
+           List<String> symbolList = null,
+           bool evalOncePerCandle = true,
+           bool closeOnOpposingSignal = true) : base(ix)
         {
-            this.symbolList = new List<string>();
-            this.symbolList.Add(Symbol());
-            this.timeframe = TIMEFRAME.PERIOD_CURRENT;
+            if (symbolList == null || symbolList.Count == 0)
+            {
+                this.symbolList = new List<string>();
+                this.symbolList.Add(Symbol());
+            }
+            else
+            {
+                this.symbolList = symbolList;
+            }
+            this.timeframe = timeframe;
+            this.evalOncePerCandle = evalOncePerCandle;
+            this.closeOnOpposingSignal = closeOnOpposingSignal;
             strategyMetaDataMap = new Dictionary<string, StrategyMetaData>();
             logHashMap = new Dictionary<String, String>();
         }
-
-        public BaseStrategy(int ix,
-                            TIMEFRAME timeframe,
-                            List<String> symbolList,
-                            bool evalOncePerCandle = true,
-                            bool closeOnOpposingSignal = true) : base(ix)
-        {
-            this.timeframe = timeframe;
-            this.symbolList = symbolList;
-            this.evalOncePerCandle = evalOncePerCandle;
-            this.closeOnOpposingSignal = closeOnOpposingSignal;
-            if (symbolList.Count == 0)
-            {
-                throw new Exception("SymbolList should not be empty in Strategy constructor");
-            }
-        }
-
-        public BaseStrategy(int ix,
-                            TIMEFRAME timeframe,
-                            String symbol,
-                            bool evalOncePerCandle = true,
-                            bool closeOnOpposingSignal = true) : base(ix)
-        {
-            this.symbolList = new List<string>();
-            this.symbolList.Add(symbol);
-            this.timeframe = timeframe;
-            this.evalOncePerCandle = evalOncePerCandle;
-            this.closeOnOpposingSignal = closeOnOpposingSignal;
-        }
-
 
         public override void OnTick()
         {
@@ -283,7 +266,7 @@ namespace MQL4CSharp.Base
             }
             catch (Exception e)
             {
-                LOG.Error(e);    
+                LOG.Error(e);
                 throw;
             }
         }
@@ -331,7 +314,7 @@ namespace MQL4CSharp.Base
             }
             catch (Exception e)
             {
-                LOG.Error(e);                
+                LOG.Error(e);
                 throw;
             }
         }
@@ -459,11 +442,11 @@ namespace MQL4CSharp.Base
                 lots = this.getLotSize(symbol, stopDistance);
 
 
-                if ((signal.getSignal() == SignalResult.BUYMARKET && !openBuyOrder) 
+                if ((signal.getSignal() == SignalResult.BUYMARKET && !openBuyOrder)
                         || (signal.getSignal() == SignalResult.SELLMARKET && !openSellOrder)
                         || (signal.getSignal() == SignalResult.BUYLIMIT && !openBuyLimitOrder && !openBuyOrder)
                         || (signal.getSignal() == SignalResult.SELLLIMIT && !openSellLimitOrder && !openSellOrder)
-                        || (signal.getSignal() == SignalResult.BUYSTOP && !openBuyStopOrder && !openBuyOrder) 
+                        || (signal.getSignal() == SignalResult.BUYSTOP && !openBuyStopOrder && !openBuyOrder)
                         || (signal.getSignal() == SignalResult.SELLSTOP && !openSellStopOrder && !openSellOrder))
                 {
                     LOG.Info(String.Format("Executing Trade at " + DateUtil.FromUnixTime((long)MarketInfo(symbol, (int)MARKET_INFO.MODE_TIME)) +
