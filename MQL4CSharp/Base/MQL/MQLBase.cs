@@ -22,9 +22,15 @@ namespace MQL4CSharp.Base
 
             TaskCompletionSource<Object> tsc = new TaskCompletionSource<Object>();
             int id = getCommandManager().ExecCommand(command, parameters, tsc);
-            tsc.Task.Wait(cmd_timeout);
-            getCommandManager().throwExceptionIfErrorResponse(id);
-            return getCommandManager().GetCommandResult(id);
+            if (tsc.Task.Wait(cmd_timeout))
+            {
+                getCommandManager().throwExceptionIfErrorResponse(id);
+                return getCommandManager().GetCommandResult(id);
+            }
+            else
+            {
+                throw new Exception("ExecCommand timed out.");
+            }
         }
 
         /// <summary>

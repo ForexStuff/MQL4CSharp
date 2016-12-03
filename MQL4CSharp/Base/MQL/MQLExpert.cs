@@ -20,7 +20,6 @@ using System.Runtime.InteropServices;
 using Amib.Threading;
 using log4net;
 using mqlsharp.Util;
-
 namespace MQL4CSharp.Base.MQL
 {
     public abstract class MQLExpert
@@ -78,9 +77,9 @@ namespace MQL4CSharp.Base.MQL
             return DLLObjectWrapper.getInstance().getMQLExpert(ix);
         }
 
-        static void OnInitThread(Int64 index, Type type)
+        static void OnInitThread(Int64 index, int hChartWnd, Type type)
         {
-            DLLObjectWrapper.getInstance().initMQLExpert(index, type);
+            DLLObjectWrapper.getInstance().initMQLExpert(index, hChartWnd, type);
             try
             {
                 getInstance(index).OnInit();
@@ -241,21 +240,26 @@ namespace MQL4CSharp.Base.MQL
             }
         }
 
-
         [DllExport("ExecOnInit", CallingConvention = CallingConvention.StdCall)]
-        public static void ExecOnInit(Int64 ix, [MarshalAs(UnmanagedType.LPWStr)] string CSharpFullTypeName)
+        public static void ExecOnInit(Int64 ix, int hChartWnd, [MarshalAs(UnmanagedType.LPWStr)] string CSharpFullTypeName)
         {
-            ExecOnInit(ix, Type.GetType(CSharpFullTypeName));
+            var type = Type.GetType(CSharpFullTypeName);
+            if (type == null)
+            {
+                LOG.Fatal(String.Format("ExecOnInit: Type not found: {0}", CSharpFullTypeName));
+            }
+            ExecOnInit(ix, hChartWnd, type);
+
         }
 
-        public static void ExecOnInit(Int64 ix, Type type)
+        public static void ExecOnInit(Int64 ix, int hChartWnd, Type type)
         {
             LOG.Debug(String.Format("Initializing: {0}", type.ToString()));
             DLLObjectWrapper.getInstance().initMQLThreadPool(ix);
 
             try
             {
-                getThreadPool(ix).QueueWorkItem(OnInitThread, ix, type);
+                getThreadPool(ix).QueueWorkItem(OnInitThread, ix, hChartWnd, type);
             }
             catch (ArgumentNullException)
             {
@@ -306,6 +310,9 @@ namespace MQL4CSharp.Base.MQL
         [DllExport("ExecOnTick", CallingConvention = CallingConvention.StdCall)]
         public static void ExecOnTick(Int64 ix)
         {
+            //skip if we're already processing OnTick for this chart
+            if (getInstance(ix).executingOnTick) return;
+
             getInstance(ix).executingOnTick = true;
             try
             {
@@ -320,6 +327,9 @@ namespace MQL4CSharp.Base.MQL
         [DllExport("ExecOnTimer", CallingConvention = CallingConvention.StdCall)]
         public static void ExecOnTimer(Int64 ix)
         {
+            //skip if we're already processing OnTimer for this chart
+            if (getInstance(ix).executingOnTimer) return;
+
             getInstance(ix).executingOnTimer = true;
             try
             {

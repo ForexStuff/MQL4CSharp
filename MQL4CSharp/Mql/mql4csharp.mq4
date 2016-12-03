@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2016 Jason Separovic
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ limitations under the License.
 
 #import "MQL4CSharp.dll"
 void InitLogging();
-int ExecOnInit(long, string);
+int ExecOnInit(long, int, string);
 int InitRates(long, MqlRates&[], int);
 void SetRatesSize(long, int);
 void ExecOnDeinit(long);
@@ -52,6 +52,7 @@ bool CommandUnlock(long);
 int ratesSize;
 MqlRates rates[];
 long chartID;
+int chartHandle;
  
 input string CSharpFullTypeName = "MQL4CSharp.UserDefined.Strategy.MaCrossStrategy"; 
 
@@ -64,8 +65,6 @@ int LOGLEVEL = INFO;
 char DELIM = 29;
 
 int DEFAULT_CHART_ID = 0;
-
-int EVENT_TIMER_MILLIS = 1;
 
 void maintainRates(long ix)
 {
@@ -191,8 +190,6 @@ bool executeCommands(long ix)
 
 int OnInit()
 {
-   EventSetMillisecondTimer(EVENT_TIMER_MILLIS);
-
    // Initialize log4net
    info("OnInit() Initializing logging");
    InitLogging();
@@ -201,8 +198,9 @@ int OnInit()
    ArrayCopyRates(rates, NULL, 0);
    ratesSize = ArraySize(rates);
    chartID = ChartID();
-   info("OnInit() ExecOnInit: ", chartID, ", ", CSharpFullTypeName);
-   ExecOnInit(chartID, CSharpFullTypeName);
+   chartHandle = ChartGetInteger(0,CHART_WINDOW_HANDLE);
+   info("OnInit() ExecOnInit: ", chartID, ", ", CSharpFullTypeName, ", ", chartHandle);
+   ExecOnInit(chartID, chartHandle, CSharpFullTypeName);
    
    info("OnInit() Waiting for Command Manager");
    while(!IsCommandManagerReady(chartID))
@@ -249,10 +247,13 @@ void OnTick()
    // Call the DLL onTick
    ExecOnTick(chartID);
 
-   // execute commands that are waiting
-   while(IsExecutingOnTick(chartID))
+   if (IsTesting())
    {
-      executeCommands(chartID);
+      // execute commands that are waiting
+      while(IsExecutingOnTick(chartID))
+      {
+         executeCommands(chartID);
+      }
    }
 
    // execute default REST commands
@@ -262,17 +263,20 @@ void OnTick()
    maintainRates(chartID);
 }
 
+bool IsCustomMessage(const long lparam)
+{
+   return (((uint)lparam)&0x80000000) != 0;
+}
+
+void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam)
+{
+   if (IsCustomMessage(lparam))
+   {
+      executeCommands(chartID);
+   }
+}
 
 void OnTimer()
 {
    ExecOnTimer(chartID);
-
-   // execute commands that are waiting
-   while(IsExecutingOnTimer(chartID))
-   {
-      executeCommands(chartID);
-   }
-   
-   // execute default REST commands
-   executeCommands(DEFAULT_CHART_ID);
 }

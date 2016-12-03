@@ -69,7 +69,7 @@ namespace MQL4CSharp.Base.MQL
 
             // create the default command manager for REST
             // Only need to use chart specific one for ChartObjects
-            mqlCommandManagers[DEFAULT_CHART_ID] = new MQLCommandManager(DEFAULT_CHART_ID);
+            mqlCommandManagers[DEFAULT_CHART_ID] = new MQLCommandManager(DEFAULT_CHART_ID, 0);
         }
 
         public MQLCommandManager getMQLCommandManager(Int64 ix)
@@ -137,13 +137,13 @@ namespace MQL4CSharp.Base.MQL
             }
         }
 
-        public void initMQLExpert(Int64 ix, Type type)
+        public void initMQLExpert(Int64 ix, int hChartWnd, Type type)
         {
             lock (mqlExpertsLock)
             {
                 try
                 {
-                    mqlCommandManagers[ix] = new MQLCommandManager(ix);
+                    mqlCommandManagers[ix] = new MQLCommandManager(ix, hChartWnd);
                     mqlExperts[ix] = (MQLExpert)Activator.CreateInstance(type, ix);
                 }
                 catch (Exception e)

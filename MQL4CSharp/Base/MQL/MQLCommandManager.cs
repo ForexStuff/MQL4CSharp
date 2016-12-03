@@ -26,6 +26,7 @@ using MQL4CSharp.Base.Enums;
 using MQL4CSharp.Base.Exceptions;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace MQL4CSharp.Base.MQL
 {
@@ -34,6 +35,7 @@ namespace MQL4CSharp.Base.MQL
         private static readonly ILog LOG = LogManager.GetLogger(typeof(MQLCommandManager));
 
         private Int64 ix;
+        private int hChartWnd;
 
         private Dictionary<int, MQLCommandRequest> commandRequests;
 
@@ -46,9 +48,10 @@ namespace MQL4CSharp.Base.MQL
 
         private int counter;
 
-        public MQLCommandManager(Int64 ix)
+        public MQLCommandManager(Int64 ix, int hChartWnd)
         {
-            LOG.Debug(String.Format("Initializing MQLCommandManager: {0}", ix));
+            LOG.Debug(String.Format("Initializing MQLCommandManager: {0} {1}", ix, hChartWnd));
+            this.hChartWnd = hChartWnd;
             this.commandRequests = new Dictionary<int, MQLCommandRequest>();
             this.ix = ix;
             counter = 0;
@@ -56,7 +59,39 @@ namespace MQL4CSharp.Base.MQL
             commandLock = UNLOCKED;
         }
 
-        
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        static extern bool PostMessage(HandleRef hWnd, uint Msg, UIntPtr wParam, IntPtr lParam);
+
+        private void PostMessageSafe(int hWnd, uint msg, uint wParam, int lParam)
+        {
+            bool returnValue = PostMessage(new HandleRef(this, new IntPtr(hWnd)), msg, new UIntPtr(wParam), new IntPtr(lParam));
+            if (!returnValue)
+            {
+                // An error occured
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+        }
+
+        /// <summary>
+        /// Logic from https://github.com/dingmaotu/mql4-lib#asynchronous-events
+        /// </summary>
+        /// <param name="ev">event</param>
+        /// <param name="param">parameter</param>
+        /// <param name="wparam">encoded wparam for WM_KEYDOWN message.</param>
+        /// <param name="lparam">encoded lparam for WM_KEYDOWN mesage.</param>
+        private void EncodeKeydownMessage(ushort ev, uint param, ref uint wparam, ref int lparam)
+        {
+            const int SHORT_BITS = 16;
+            uint t = ev;
+            t <<= SHORT_BITS;
+            t |= 0x80000000;
+            uint highPart = param & 0xFFFF0000;
+            uint lowPart = param & 0x0000FFFF;
+            wparam = (t | (highPart >> SHORT_BITS));
+            lparam = (int)lowPart;
+        }
+
         public int ExecCommand(MQLCommand command, List<Object> parameters, TaskCompletionSource<Object> taskCompletionSource = null)
         {
             LOG.DebugFormat("ExecCommand: {0}", command.ToString());
@@ -65,6 +100,16 @@ namespace MQL4CSharp.Base.MQL
             {
                 id = counter++;
                 commandRequests[id] = new MQLCommandRequest(id, command, parameters, taskCompletionSource);
+                //notify MT4 OnChartEvent()
+                if (hChartWnd != 0)
+                {
+                    const uint WM_KEYDOWN = 0x0100;
+                    uint wparam = 0;
+                    int lparam = 0;
+                    EncodeKeydownMessage((ushort)command, (uint)id, ref wparam, ref lparam);
+                    PostMessageSafe(hChartWnd, WM_KEYDOWN, wparam, lparam);
+                }
+
             }
             return id;
         }
@@ -191,7 +236,7 @@ namespace MQL4CSharp.Base.MQL
                 {
                     if (getInstance(ix).commandRequests[id].CommandWaiting)
                     {
-                        return (int) getInstance(ix).commandRequests[id].Command;
+                        return (int)getInstance(ix).commandRequests[id].Command;
                     }
                     else
                     {
@@ -362,5 +407,3 @@ namespace MQL4CSharp.Base.MQL
 
     }
 }
-
-
