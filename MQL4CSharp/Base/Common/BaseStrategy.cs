@@ -69,7 +69,7 @@ namespace MQL4CSharp.Base
                 try
                 {
                     int total = this.OrdersTotal();
-                    for (int i = 0; i < total; i++)
+                    for (int i = total - 1; i >= 0; i--)
                     {
                         if (OrderSelect(i, (int)SELECTION_TYPE.SELECT_BY_POS, (int)SELECTION_POOL.MODE_TRADES) && OrderMagicNumber() == getMagicNumber(symbol))
                         {
