@@ -388,7 +388,7 @@ namespace MQL4CSharp.Base
 
 
                 // Check open trades on this symbol
-                for (int i = 0; i < OrdersTotal(); i++)
+                for (int i = OrdersTotal() - 1; i >= 0; i--)
                 {
                     OrderSelect(i, (int)SELECTION_TYPE.SELECT_BY_POS, (int)SELECTION_POOL.MODE_TRADES);
                     if (OrderType() == (int)TRADE_OPERATION.OP_BUY && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
