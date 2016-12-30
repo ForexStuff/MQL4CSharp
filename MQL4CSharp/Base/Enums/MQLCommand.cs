@@ -259,6 +259,8 @@ namespace MQL4CSharp.Base.Enums
         iStdDev_1 = 238,
         iStochastic_1 = 239,
         iWPR_1 = 240,
+        TimeLocal_1 = 241,
+        TimeCurrent_1 = 242,
 
         ObjectCreate_3 = 1001,
         iCustom_1 = 1000,

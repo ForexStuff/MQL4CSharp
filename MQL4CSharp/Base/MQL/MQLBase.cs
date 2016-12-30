@@ -3735,5 +3735,38 @@ namespace MQL4CSharp.Base
             return (double)ExecCommand(MQLCommand.iCustom_1, parameters); // MQLCommand ENUM = 1000
         }*/
 
+        /// <summary>
+        /// Function: TimeLocal
+        /// Description: Returns the local time of a computer, where the client terminal is running.
+        /// URL: https://docs.mql4.com/dateandtime/timelocal
+        /// </summary>
+        public DateTime TimeLocal()
+        {
+            List<Object> parameters = new List<Object>();
+            int id = getCommandManager().ExecCommand(MQLCommand.TimeLocal_1, parameters); // MQLCommand ENUM = 241
+            while (getCommandManager().IsCommandRunning(id))
+            {
+                //Thread.Sleep(1);
+            }
+            getCommandManager().throwExceptionIfErrorResponse(id);
+            return (DateTime)getCommandManager().GetCommandResult(id);
+        }
+
+        /// <summary>
+        /// Function: TimeCurrent
+        /// Description: Returns the last known server time, time of the last quote receipt for one of the symbols selected in the "Market Watch" window. In the OnTick() handler, this function returns the time of the received handled tick. In other cases (for example, call in handlers OnInit(), OnDeinit(), OnTimer() and so on) this is the time of the last quote receipt for any symbol available in the "Market Watch" window, the time shown in the title of this window. The time value is formed on a trade server and does not depend on the time settings on your computer.
+        /// URL: https://docs.mql4.com/dateandtime/timecurrent
+        /// </summary>
+        public DateTime TimeCurrent()
+        {
+            List<Object> parameters = new List<Object>();
+            int id = getCommandManager().ExecCommand(MQLCommand.TimeCurrent_1, parameters); // MQLCommand ENUM = 241
+            while (getCommandManager().IsCommandRunning(id))
+            {
+                //Thread.Sleep(1);
+            }
+            getCommandManager().throwExceptionIfErrorResponse(id);
+            return (DateTime)getCommandManager().GetCommandResult(id);
+        }
     }
 }

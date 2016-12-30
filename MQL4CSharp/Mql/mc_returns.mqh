@@ -1,4 +1,4 @@
-﻿int RETURN_TYPE_BOOL = 1;
+int RETURN_TYPE_BOOL = 1;
 int RETURN_TYPE_DOUBLE = 2;
 int RETURN_TYPE_INT = 3;
 int RETURN_TYPE_STRING = 4;
@@ -493,6 +493,10 @@ int getCommandReturnType(int id)
         return RETURN_TYPE_DOUBLE;
       case 240:
         return RETURN_TYPE_DOUBLE;
+      case 241:
+        return RETURN_TYPE_DATETIME;
+      case 242:
+        return RETURN_TYPE_DATETIME;
 
       default:
          return -1;

@@ -529,5 +529,9 @@ datetime executeDateTimeCommand(int id, string params[])
          return GlobalVariableSet(params[0], StringToDouble(params[1]));
       case 188:
          return ObjectGetTimeByValue(params[0], StringToDouble(params[1]), StrToInteger(params[2]));
+	  case 241:
+	     return TimeLocal();
+	  case 242:
+	     return TimeCurrent();
    }
 }
