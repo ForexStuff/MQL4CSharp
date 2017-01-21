@@ -390,41 +390,43 @@ namespace MQL4CSharp.Base
                 // Check open trades on this symbol
                 for (int i = OrdersTotal() - 1; i >= 0; i--)
                 {
-                    OrderSelect(i, (int)SELECTION_TYPE.SELECT_BY_POS, (int)SELECTION_POOL.MODE_TRADES);
-                    if (OrderType() == (int)TRADE_OPERATION.OP_BUY && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
+                    if (OrderSelect(i, (int)SELECTION_TYPE.SELECT_BY_POS, (int)SELECTION_POOL.MODE_TRADES))
                     {
-                        lastBuyOpen = OrderOpenTime();
-                        openBuyOrder = true;
-                        if (closeOnOpposingSignal && signal.getSignal() < 0)
+                        if (OrderType() == (int)TRADE_OPERATION.OP_BUY && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
                         {
-                            closeOutThisOrder(symbol);
+                            lastBuyOpen = OrderOpenTime();
+                            openBuyOrder = true;
+                            if (closeOnOpposingSignal && signal.getSignal() < 0)
+                            {
+                                closeOutThisOrder(symbol);
+                            }
                         }
-                    }
-                    else if (OrderType() == (int)TRADE_OPERATION.OP_SELL && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
-                    {
-                        lastSellOpen = OrderOpenTime();
-                        openSellOrder = true;
-                        if (closeOnOpposingSignal && signal.getSignal() > 0)
+                        else if (OrderType() == (int)TRADE_OPERATION.OP_SELL && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
                         {
-                            closeOutThisOrder(symbol);
-                        }
+                            lastSellOpen = OrderOpenTime();
+                            openSellOrder = true;
+                            if (closeOnOpposingSignal && signal.getSignal() > 0)
+                            {
+                                closeOutThisOrder(symbol);
+                            }
 
-                    }
-                    else if (OrderType() == (int)TRADE_OPERATION.OP_BUYSTOP && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
-                    {
-                        openBuyStopOrder = true;
-                    }
-                    else if (OrderType() == (int)TRADE_OPERATION.OP_SELLSTOP && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
-                    {
-                        openSellStopOrder = true;
-                    }
-                    else if (OrderType() == (int)TRADE_OPERATION.OP_BUYLIMIT && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
-                    {
-                        openBuyLimitOrder = true;
-                    }
-                    else if (OrderType() == (int)TRADE_OPERATION.OP_SELLLIMIT && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
-                    {
-                        openSellLimitOrder = true;
+                        }
+                        else if (OrderType() == (int)TRADE_OPERATION.OP_BUYSTOP && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
+                        {
+                            openBuyStopOrder = true;
+                        }
+                        else if (OrderType() == (int)TRADE_OPERATION.OP_SELLSTOP && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
+                        {
+                            openSellStopOrder = true;
+                        }
+                        else if (OrderType() == (int)TRADE_OPERATION.OP_BUYLIMIT && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
+                        {
+                            openBuyLimitOrder = true;
+                        }
+                        else if (OrderType() == (int)TRADE_OPERATION.OP_SELLLIMIT && OrderSymbol().Equals(symbol) && OrderMagicNumber() == magic)
+                        {
+                            openSellLimitOrder = true;
+                        }
                     }
                 }
 
