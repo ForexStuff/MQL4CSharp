@@ -451,6 +451,28 @@ namespace MQL4CSharp.Base
                         || (signal.getSignal() == SignalResult.BUYSTOP && !openBuyStopOrder && !openBuyOrder)
                         || (signal.getSignal() == SignalResult.SELLSTOP && !openSellStopOrder && !openSellOrder))
                 {
+                    string tradeoperation = string.Empty;
+                    switch (op)
+                    {
+                        case TRADE_OPERATION.OP_BUY:
+                            tradeoperation = "BUY";
+                            break;
+                        case TRADE_OPERATION.OP_SELL:
+                            tradeoperation = "SELL";
+                            break;
+                        case TRADE_OPERATION.OP_BUYLIMIT:
+                            tradeoperation = "BUYLIMIT";
+                            break;
+                        case TRADE_OPERATION.OP_SELLLIMIT:
+                            tradeoperation = "SELLLIMIT";
+                            break;
+                        case TRADE_OPERATION.OP_BUYSTOP:
+                            tradeoperation = "BUYSTOP";
+                            break;
+                        case TRADE_OPERATION.OP_SELLSTOP:
+                            tradeoperation = "SELLSTOP";
+                            break;
+                    }
                     LOG.Info(String.Format("Executing Trade at " + DateUtil.FromUnixTime((long)MarketInfo(symbol, (int)MARKET_INFO.MODE_TIME)) +
                                             "\n\tsymbol:\t{0}" +
                                             "\n\top:\t\t{1}" +
@@ -462,7 +484,7 @@ namespace MQL4CSharp.Base
                                             "\n\tcomment:\t{7}" +
                                             "\n\tmagic:\t\t{8}" +
                                             "\n\texpiration:\t{9}" +
-                                            "\n\tarrowColor:\t{0}", symbol, (int) op, lots, entryPrice, slippage, stoploss, takeprofit, comment, magic, expiration, arrowColor));
+                                            "\n\tarrowColor:\t{0}", symbol, tradeoperation, lots, entryPrice, slippage, stoploss, takeprofit, comment, magic, expiration, arrowColor));
 
                     OrderSend(symbol, (int)op, lots, entryPrice, slippage, stoploss, takeprofit, comment, magic, expiration, arrowColor);
                 }
