@@ -1505,8 +1505,23 @@ namespace MQL4CSharp.Base
             parameters.Add(price);
             parameters.Add(slippage);
             parameters.Add(arrow_color);
-            return (bool)ExecCommand(MQLCommand.OrderClose_1, parameters); // MQLCommand ENUM = 107
+            if ((bool)ExecCommand(MQLCommand.OrderClose_1, parameters)) // MQLCommand ENUM = 107
+            {
+                OrderClosed?.Invoke(this, new OrderClosedEventArgs() { Ticket = ticket, Lots = lots, Price = price, Slippage = slippage });
+                return true;
+            }
+            return false;
         }
+
+        public class OrderClosedEventArgs : EventArgs
+        {
+            public int Ticket { get; set; }
+            public double Lots { get; set; }
+            public double Price { get; set; }
+            public int Slippage { get; set; }
+        }
+        public delegate void OrderClosedEventHandler(object sender, OrderClosedEventArgs e);
+        public event OrderClosedEventHandler OrderClosed;
 
         /// <summary>
         /// Function: OrderCloseBy
