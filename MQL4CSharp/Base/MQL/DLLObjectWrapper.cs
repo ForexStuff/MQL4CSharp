@@ -38,8 +38,6 @@ namespace MQL4CSharp.Base.MQL
 
         private static readonly object syncLock = new object();
 
-        private long restCommandLock;
-
         public static DLLObjectWrapper getInstance()
         {
             lock (syncLock)
@@ -56,16 +54,12 @@ namespace MQL4CSharp.Base.MQL
         private Dictionary<Int64, MQLExpert> mqlExperts;
         private Dictionary<Int64, MQLThreadPool> mqlThreadPools;
 
-        private int mqlExpertsIx;
-
-        private readonly object mqlCommandManagersLock;
         private readonly object mqlExpertsLock;
 
-        private RESTServer restServer;
+        private readonly RESTServer restServer;
 
         private DLLObjectWrapper()
         {
-            restCommandLock = 0;
             mqlExperts = new Dictionary<Int64, MQLExpert>();
             mqlCommandManagers = new Dictionary<Int64, MQLCommandManager>();
             mqlThreadPools = new Dictionary<Int64, MQLThreadPool>();

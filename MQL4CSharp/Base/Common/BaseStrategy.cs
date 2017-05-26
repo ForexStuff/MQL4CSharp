@@ -26,21 +26,18 @@ namespace MQL4CSharp.Base
 {
     public abstract class BaseStrategy : MQLBase
     {
-        public static readonly ILog LOG = LogManager.GetLogger(typeof(BaseStrategy));
+        public new static readonly ILog LOG = LogManager.GetLogger(typeof(BaseStrategy));
 
         private bool evalOncePerCandle = true;
         private bool closeOnOpposingSignal = true;
         private Dictionary<string, StrategyMetaData> strategyMetaDataMap;
-        private double yesterdaysHigh, yesterdaysLow, todaysHigh, todaysLow;
-        private Dictionary<long, SignalResult> orderToSignalMap;
         public static DateTimeZone DATE_TZ = DateTimeZone.ForOffset(Offset.Zero);
-        private String strategyName;
         private List<String> symbolList;
         private TIMEFRAME timeframe;
 
         private Dictionary<String, String> logHashMap;
 
-        public BaseStrategy(long ix,
+        protected BaseStrategy(long ix,
            TIMEFRAME timeframe = TIMEFRAME.PERIOD_CURRENT,
            List<String> symbolList = null,
            bool evalOncePerCandle = true,
@@ -338,7 +335,7 @@ namespace MQL4CSharp.Base
             try
             {
                 TRADE_OPERATION op;
-                double price, lots;
+                double lots;
                 int slippage = 5000;
                 double stoploss = this.getStopLoss(symbol, signal);
                 double takeprofit = this.getTakeProfit(symbol, signal);

@@ -45,7 +45,6 @@ namespace MQL4CSharp.UserDefined.Input
 
         private void parse(String fileName, char separator)
         {
-            int counter = 0;
             string line;
 
             // Read the file and display it line by line.
@@ -53,7 +52,7 @@ namespace MQL4CSharp.UserDefined.Input
                new System.IO.StreamReader(fileName);
             while ((line = file.ReadLine()) != null)
             {
-                if(!line.StartsWith("#") && !line.Equals(""))
+                if(!line.StartsWith("#") && !string.IsNullOrEmpty(line))
                 {
                     String[] parts = line.Split(separator);
                     String pair = parts[0];

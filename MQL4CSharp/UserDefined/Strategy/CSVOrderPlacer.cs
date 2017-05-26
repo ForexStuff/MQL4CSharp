@@ -18,7 +18,6 @@ namespace MQL4CSharp.UserDefined.Strategy
         }
 
         private int magicnumber = 3456;
-        private int commissionPips = 1;
 
         private FixedDollarRiskProfile fixedDollarRiskProfile;
 

@@ -29,9 +29,6 @@ namespace MQL4CSharp.Base.MQL
 
         Int64 timerInterval = 1000;
         DateTime timer = DateTime.Now;
-        SmartThreadPool threadPool;
-        private string typeName;
-        private int baseStrategyIx;
 
         private bool executingOnInit;
         private bool executingOnTick;
@@ -39,9 +36,8 @@ namespace MQL4CSharp.Base.MQL
         private bool executingOnDeinit;
 
         public Int64 ix;
-        MQLCommandManager commandManager;
 
-        public MQLExpert(Int64 ix) : base()
+        protected MQLExpert(Int64 ix) : base()
         {
             this.ix = ix;
             this.executingOnInit = true;

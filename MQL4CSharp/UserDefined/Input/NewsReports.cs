@@ -45,8 +45,6 @@ namespace MQL4CSharp.UserDefined.Input
 
         private void parseInputLevels(String fileName, char separator)
         {
-
-            int counter = 0;
             string line;
 
             // Read the file and display it line by line.
@@ -54,7 +52,7 @@ namespace MQL4CSharp.UserDefined.Input
                new System.IO.StreamReader(fileName);
             while ((line = file.ReadLine()) != null)
             {
-                if(!line.StartsWith("#") && !line.Equals(""))
+                if(!line.StartsWith("#") && !String.IsNullOrEmpty(line))
                 {
 
                     String[] parts = line.Split(separator);

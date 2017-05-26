@@ -77,7 +77,6 @@ namespace MQL4CSharp.UserDefined.Strategy
         // returns true if ok to take a trade
         public override bool filter(string symbol)
         {
-            return true;
             return timeOfDayFilter.filter(symbol, strategyTimeframe);
         }
 
