@@ -132,7 +132,7 @@ namespace MQL4CSharp.Base.MQL
         {
             lock (syncLock)
             {
-                LOG.DebugFormat("throwExceptionIfErrorResponse({0})", id, commandRequests[id].Error);
+                LOG.DebugFormat("throwExceptionIfErrorResponse({0}) {1}", id, commandRequests[id].Error);
                 if (commandRequests[id].Error > 0)
                 {
                     int error = commandRequests[id].Error;
