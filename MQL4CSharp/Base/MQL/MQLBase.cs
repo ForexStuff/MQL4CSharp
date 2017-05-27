@@ -3764,13 +3764,7 @@ namespace MQL4CSharp.Base
         public DateTime TimeLocal()
         {
             List<Object> parameters = new List<Object>();
-            int id = getCommandManager().ExecCommand(MQLCommand.TimeLocal_1, parameters); // MQLCommand ENUM = 241
-            while (getCommandManager().IsCommandRunning(id))
-            {
-                //Thread.Sleep(1);
-            }
-            getCommandManager().throwExceptionIfErrorResponse(id);
-            return (DateTime)getCommandManager().GetCommandResult(id);
+            return (DateTime)ExecCommand(MQLCommand.TimeLocal_1, parameters); // MQLCommand ENUM = 241
         }
 
         /// <summary>
@@ -3781,13 +3775,7 @@ namespace MQL4CSharp.Base
         public DateTime TimeCurrent()
         {
             List<Object> parameters = new List<Object>();
-            int id = getCommandManager().ExecCommand(MQLCommand.TimeCurrent_1, parameters); // MQLCommand ENUM = 241
-            while (getCommandManager().IsCommandRunning(id))
-            {
-                //Thread.Sleep(1);
-            }
-            getCommandManager().throwExceptionIfErrorResponse(id);
-            return (DateTime)getCommandManager().GetCommandResult(id);
+            return (DateTime)ExecCommand(MQLCommand.TimeCurrent_1, parameters); // MQLCommand ENUM = 241
         }
     }
 }
