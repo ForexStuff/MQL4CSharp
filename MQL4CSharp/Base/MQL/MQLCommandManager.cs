@@ -80,7 +80,7 @@ namespace MQL4CSharp.Base.MQL
         /// <param name="param">parameter</param>
         /// <param name="wparam">encoded wparam for WM_KEYDOWN message.</param>
         /// <param name="lparam">encoded lparam for WM_KEYDOWN mesage.</param>
-        private void EncodeKeydownMessage(ushort ev, uint param, ref uint wparam, ref int lparam)
+        private (uint wparam, int lparam) EncodeKeydownMessage(ushort ev, uint param)
         {
             const int SHORT_BITS = 16;
             uint t = ev;
@@ -88,8 +88,9 @@ namespace MQL4CSharp.Base.MQL
             t |= 0x80000000;
             uint highPart = param & 0xFFFF0000;
             uint lowPart = param & 0x0000FFFF;
-            wparam = (t | (highPart >> SHORT_BITS));
-            lparam = (int)lowPart;
+            uint wparam = (t | (highPart >> SHORT_BITS));
+            int lparam = (int)lowPart;
+            return (wparam, lparam);
         }
 
         public int ExecCommand(MQLCommand command, List<Object> parameters, TaskCompletionSource<Object> taskCompletionSource = null)
@@ -104,10 +105,8 @@ namespace MQL4CSharp.Base.MQL
                 if (hChartWnd != 0)
                 {
                     const uint WM_KEYDOWN = 0x0100;
-                    uint wparam = 0;
-                    int lparam = 0;
-                    EncodeKeydownMessage((ushort)command, (uint)id, ref wparam, ref lparam);
-                    PostMessageSafe(hChartWnd, WM_KEYDOWN, wparam, lparam);
+                    var message = EncodeKeydownMessage((ushort)command, (uint)id);
+                    PostMessageSafe(hChartWnd, WM_KEYDOWN, message.wparam, message.lparam);
                 }
 
             }
