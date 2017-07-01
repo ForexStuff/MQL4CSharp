@@ -19,6 +19,7 @@ namespace MQL4CSharp.Base.Enums
 {
     public enum MQLCommand
     {
+        None = 0,
         Alert_1 = 1,
         Comment_1 = 2,
         SendFTP_1 = 3,
