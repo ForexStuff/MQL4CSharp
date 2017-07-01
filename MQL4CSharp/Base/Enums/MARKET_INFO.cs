@@ -46,5 +46,6 @@ namespace MQL4CSharp.Base.Enums
         MODE_MARGINHEDGED	= 31, //	Margin to maintain open orders calculated for 1 lot
         MODE_MARGINREQUIRED	= 32, //	Hedged margin calculated for 1 lot
         MODE_FREEZELEVEL	= 33, //	Free margin required to open 1 lot for buying
+        MODE_CLOSEBY_ALLOWED = 34, //   Allowed using OrderCloseBy() to close opposite orders on a specified symbol
     }
 }
