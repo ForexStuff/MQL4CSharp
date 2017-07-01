@@ -93,6 +93,17 @@ namespace MQL4CSharp.Base.MQL
             return (wparam, lparam);
         }
 
+        public void NotifyHost(MQLCommand command, int id)
+        {
+            //notify MT4 OnChartEvent()
+            if (hChartWnd != 0)
+            {
+                const uint WM_KEYDOWN = 0x0100;
+                var message = EncodeKeydownMessage((ushort)command, (uint)id);
+                PostMessageSafe(hChartWnd, WM_KEYDOWN, message.wparam, message.lparam);
+            }
+        }
+
         public int ExecCommand(MQLCommand command, List<Object> parameters, TaskCompletionSource<Object> taskCompletionSource = null)
         {
             LOG.DebugFormat("ExecCommand: {0}", command.ToString());
@@ -101,14 +112,7 @@ namespace MQL4CSharp.Base.MQL
             {
                 id = counter++;
                 commandRequests[id] = new MQLCommandRequest(id, command, parameters, taskCompletionSource);
-                //notify MT4 OnChartEvent()
-                if (hChartWnd != 0)
-                {
-                    const uint WM_KEYDOWN = 0x0100;
-                    var message = EncodeKeydownMessage((ushort)command, (uint)id);
-                    PostMessageSafe(hChartWnd, WM_KEYDOWN, message.wparam, message.lparam);
-                }
-
+                NotifyHost(command, id);
             }
             return id;
         }
