@@ -29,7 +29,7 @@ namespace MQL4CSharp.Base
             }
             else
             {
-                throw new Exception("ExecCommand timed out.");
+                throw new Exception($"ExecCommand timed out. {command.ToString()}");
             }
         }
 
