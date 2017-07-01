@@ -1513,7 +1513,7 @@ namespace MQL4CSharp.Base
             parameters.Add(arrow_color);
             if ((bool)ExecCommand(MQLCommand.OrderClose_1, parameters)) // MQLCommand ENUM = 107
             {
-                OrderClosed?.Invoke(this, new OrderClosedEventArgs() { Ticket = ticket, Lots = lots, Price = price, Slippage = slippage });
+                OrderClosed?.Invoke(this, new OrderClosedEventArgs() { Ticket = ticket, Lots = lots, Price = price, Slippage = slippage, CloseTime = TimeCurrent() });
                 return true;
             }
             return false;
@@ -1525,6 +1525,7 @@ namespace MQL4CSharp.Base
             public double Lots { get; set; }
             public double Price { get; set; }
             public int Slippage { get; set; }
+            public DateTime CloseTime { get; set; }
         }
         public delegate void OrderClosedEventHandler(object sender, OrderClosedEventArgs e);
         public event OrderClosedEventHandler OrderClosed;
